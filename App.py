@@ -31,6 +31,7 @@ def get_health():
 
 @app.post("/object-to-json")
 async def detect_food_return_json_result(file: bytes = File(...)):
+    print(file)
     input_image = get_image_from_bytes(file)
     results = model(input_image)
     detect_res = results.pandas().xyxy[0].to_json(orient="records")
@@ -50,22 +51,7 @@ async def detect_food_return_base64_img(file: bytes = File(...)):
 media_type="image/jpeg")
 
 
-import torch
-from PIL import Image
-import io
-def get_yolov5():
-    model = torch.hub.load('./yolov5', 'custom', path='./model/best.pt', source='local')
-    model.conf = 0.5
-    return model
-def get_image_from_bytes(binary_image, max_size=1024):
-    input_image =Image.open(io.BytesIO(binary_image)).convert("RGB")
-    width, height = input_image.size
-    resize_factor = min(max_size / width, max_size / height)
-    resized_image = input_image.resize((
-        int(input_image.width * resize_factor),
-        int(input_image.height * resize_factor)
-    ))
-    return resized_image
+
 
 
 
